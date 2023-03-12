@@ -3,16 +3,17 @@ from math import sqrt, pi, cos, sin
 from PIL import Image, ImageFilter, ImageDraw
 import PIL.PngImagePlugin as png
 
-
-boje = {
-    (255, 0, 0): 'red',
-    (0, 0, 255): 'blue',
-    (0, 255, 0): 'green',
-    (255, 255, 0): 'yellow',
-    (0, 0, 0): 'black'
-}
-
+#task 1 radi super
 def task1(img):
+
+    boje = {
+        (255, 0, 0): 'red',
+        (0, 0, 255): 'blue',
+        (0, 255, 0): 'green',
+        (255, 255, 0): 'yellow',
+        (0, 0, 0): 'black'
+    }
+
     brojac = {
         'red': 0,
         'blue': 0,
@@ -28,7 +29,7 @@ def task1(img):
     for n, m in brojac.items():
         print(m)
 
-
+#task2 ne radi bas sjajno
 def hough(image: png.PngImageFile, radius, threshold):
     #u grayscale
     gray = image.convert('L')
