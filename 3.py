@@ -1,6 +1,7 @@
 import numpy as np
 from math import sqrt, pi, cos, sin
 from PIL import Image, ImageFilter, ImageDraw
+import PIL.PngImagePlugin as png
 
 
 boje = {
@@ -28,41 +29,44 @@ def task1(img):
         print(m)
 
 
-def hough(image, radius, threshold):
-    # Convert the image to grayscale
+def hough(image: png.PngImageFile, radius, threshold):
+    #u grayscale
     gray = image.convert('L')
-    # Initialize accumulator
+    
+    # pravim akumulator
     width, height = gray.size
     accumulator = [[0 for y in range(height)] for x in range(width)]
-
-    # Create a lookup table for sin and cos values
+    # Create a lookup table for sin and cos values?
     sin_table = [sin(theta) for theta in range(360)]
     cos_table = [cos(theta) for theta in range(360)]
-
+    
     #edge detector
-    edges = gray.filter(ImageFilter.FIND_EDGES)
-    edges1 = np.array(edges)
-    edges1 = np.where(edges1 > 20, 255, 0)
-    edges.putdata(edges1.flatten())
+    grej = np.where(np.asarray(gray) > 240, 255, 0).astype('uint8')
+    grej2 = Image.fromarray(grej, mode='L')
+    edges = grej2.filter(ImageFilter.FIND_EDGES)
+    pom = np.where(np.array(edges) > 15, 255, 0)
+    edges.putdata(pom.flatten())
+    edges.show()
 
-     # Iterate over the edges and vote for circles
+    #ide kroz sliku i gleda ako pixel nije crn
     for x in range(width):
         for y in range(height):
-            if edges.getpixel((x, y)):
+            if edges.getpixel((x, y)) != 0: 
                 for theta in range(360):
-                    a = int(x - radius * cos_table[theta])
-                    b = int(y - radius * sin_table[theta])
+                    a = int(x - cos_table[theta])
+                    b = int(y - sin_table[theta])
                     if a >= 0 and a < width and b >= 0 and b < height:
                         accumulator[a][b] += 1
 
-    # Find the centers of the circles with enough votes
+
+    # najgusci presek novonastalih krugova je centar?
     centers = []
     for x in range(width):
         for y in range(height):
             if accumulator[x][y] >= threshold:
                 centers.append((x, y))
 
-    # Draw the circles on a new image
+    #output slika
     output = Image.new('RGB', image.size, (255, 255, 255))
     draw = ImageDraw.Draw(output)
     for center in centers:
@@ -71,11 +75,11 @@ def hough(image, radius, threshold):
     
 
 
-
 # path = input()
 # img = Image.open(path)
 img = Image.open("logo.png")
 task1(img)
-hough(img, 10, 100)
+hough(img, 150, 271)
+
 
 
