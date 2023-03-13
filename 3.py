@@ -59,7 +59,6 @@ def hough(image: png.PngImageFile, radius, threshold):
                     if a >= 0 and a < width and b >= 0 and b < height:
                         accumulator[a][b] += 1
 
-
     # najgusci presek novonastalih krugova je centar?
     centers = []
     for x in range(width):
@@ -78,9 +77,9 @@ def hough(image: png.PngImageFile, radius, threshold):
 
 # path = input()
 # img = Image.open(path)
-img = Image.open("logo.png")
+img = Image.open("/home/covek/Downloads/PSIML/4204/Olympic_rings/public/set/01.png")
 task1(img)
-hough(img, 150, 271)
+hough(img, 70, 271)
 
 
 
