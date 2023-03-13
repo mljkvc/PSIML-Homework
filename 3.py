@@ -38,8 +38,8 @@ def hough(image: png.PngImageFile, radius, threshold):
     width, height = gray.size
     accumulator = [[0 for y in range(height)] for x in range(width)]
     # Create a lookup table for sin and cos values?
-    sin_table = [sin(theta) for theta in range(360)]
-    cos_table = [cos(theta) for theta in range(360)]
+    sin_table = [sin(teta) for teta in range(360)]
+    cos_table = [cos(teta) for teta in range(360)]
     
     #edge detector
     grej = np.where(np.asarray(gray) > 240, 255, 0).astype('uint8')
@@ -53,9 +53,9 @@ def hough(image: png.PngImageFile, radius, threshold):
     for x in range(width):
         for y in range(height):
             if edges.getpixel((x, y)) != 0: 
-                for theta in range(360):
-                    a = int(x - cos_table[theta])
-                    b = int(y - sin_table[theta])
+                for teta in range(360):
+                    a = int(x - cos_table[teta])
+                    b = int(y - sin_table[teta])
                     if a >= 0 and a < width and b >= 0 and b < height:
                         accumulator[a][b] += 1
 
