@@ -47,7 +47,7 @@ def hough(image: png.PngImageFile, radius, threshold):
     edges = grej2.filter(ImageFilter.FIND_EDGES)
     pom = np.where(np.array(edges) > 15, 255, 0)
     edges.putdata(pom.flatten())
-    edges.show()
+    # edges.show()
 
     #ide kroz sliku i gleda ako pixel nije crn
     for x in range(width):
