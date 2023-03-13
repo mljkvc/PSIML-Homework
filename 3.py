@@ -77,7 +77,7 @@ def hough(image: png.PngImageFile, radius, threshold):
 
 # path = input()
 # img = Image.open(path)
-img = Image.open("/home/covek/Downloads/PSIML/4204/Olympic_rings/public/set/01.png")
+img = Image.open("01.png")
 task1(img)
 hough(img, 70, 271)
 
