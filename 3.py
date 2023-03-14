@@ -7,27 +7,27 @@ import PIL.PngImagePlugin as png
 def task1(img):
 
     boje = {
-        (255, 0, 0): 'red',
-        (0, 0, 255): 'blue',
-        (0, 255, 0): 'green',
-        (255, 255, 0): 'yellow',
-        (0, 0, 0): 'black'
+        (255, 255, 0): 'Y',
+        (0, 0, 255): 'B',
+        (0, 0, 0): 'K',
+        (0, 255, 0): 'G',
+        (255, 0, 0): 'R'
     }
 
     brojac = {
-        'red': 0,
-        'blue': 0,
-        'green': 0,
-        'yellow': 0,
-        'black': 0
+        'Y': 0,
+        'B': 0,
+        'K': 0,
+        'G': 0,
+        'R': 0
     }
 
     for pixel in img.getdata():
-        if pixel in boje:
-            brojac[boje[pixel]] += 1
+        if pixel[:3] in boje:
+            brojac[boje[pixel[:3]]] += 1
 
     for n, m in brojac.items():
-        print(m)
+        print(n, m)
 
 #task2 ne radi bas sjajno
 def hough(image: png.PngImageFile, radius, threshold):
@@ -42,17 +42,14 @@ def hough(image: png.PngImageFile, radius, threshold):
     cos_table = [cos(teta) for teta in range(360)]
     
     #edge detector
-    grej = np.where(np.asarray(gray) > 240, 255, 0).astype('uint8')
-    grej2 = Image.fromarray(grej, mode='L')
-    edges = grej2.filter(ImageFilter.FIND_EDGES)
-    pom = np.where(np.array(edges) > 15, 255, 0)
-    edges.putdata(pom.flatten())
-    # edges.show()
+    pom = np.where(np.array(gray) > 240, 255, 0)
+    gray.putdata(pom.flatten())
+    # gray.show()
 
     #ide kroz sliku i gleda ako pixel nije crn
     for x in range(width):
         for y in range(height):
-            if edges.getpixel((x, y)) != 0: 
+            if gray.getpixel((x, y)) == 0: 
                 for teta in range(360):
                     a = int(x - cos_table[teta])
                     b = int(y - sin_table[teta])
@@ -75,11 +72,11 @@ def hough(image: png.PngImageFile, radius, threshold):
     
 
 
-# path = input()
-# img = Image.open(path)
-img = Image.open("01.png")
+path = input()
+img = Image.open(path)
+# img = Image.open("/home/covek/Downloads/PSIML/4204/Olympic_rings/public/set/02.png")
 task1(img)
-hough(img, 70, 271)
+hough(img, 70, 184)
 
 
 
