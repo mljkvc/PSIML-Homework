@@ -59,7 +59,7 @@ def ispis(krugovi):
 
     #nalazim broj validnih logoa, pronalazim redom za boje i uklanjam ih iz circles i povecavam br
     br_validnih = 0
-    res = []
+    pom = []
     while True:
         #za svaku boju kruga zovem fju nadji
         k1 = nadji(krugovi, 'B', 'Y')
@@ -70,66 +70,68 @@ def ispis(krugovi):
 
         if k1 == 0 or k2 == 0 or k3 == 0 or k4 == 0 or k5 == 0: 
             break
-
+        
+        #ako sam nasao ceo validan logo izbacujem te krugove iz krugovi
         krugovi.remove(k1)
         krugovi.remove(k2)
         krugovi.remove(k3)
         krugovi.remove(k4)
         krugovi.remove(k5)
         
-        res.append(k1)
-        res.append(k2)
-        res.append(k3)
-        res.append(k4)
-        res.append(k5)
+        #pravim pom listu jer moram da ispisem br_validnih pre koordinata
+        pom.append(k1)
+        pom.append(k2)
+        pom.append(k3)
+        pom.append(k4)
+        pom.append(k5)
 
         br_validnih += 1
     #----------------------------
 
     #ispis task2
     print(br_validnih)
-    for i in res:
+    for i in pom:
         print(i[0], i[1], i[2])
     #----------------------------
 
 #hough_circles algoritam za trazenje centrova krugova
-def hough_circles(img, rmin, rmax, steps, threshold):
+def hough_circles(img, r_min, r_max, steps, threshold):
 
+    #uzimam koordinate 
+    rgb_im = img.convert('RGB')
     #grayscale, edge detector
-    gray = img.convert('L')
-    pom = np.where(np.array(gray) > 240, 255, 0)
-    gray.putdata(pom.flatten())
+    img = img.convert('L')
+    img.putdata(np.where(np.array(img) > 240, 255, 0).flatten())
     #---------------------------
 
     #nadji koordinate svih crnih pixela
-    pixels = np.asarray(gray)
+    pixels = np.asarray(img)
     koordinate = np.column_stack(np.where(pixels < 10))
     koordinate = koordinate.tolist()
     #---------------------------
     
-    #nije mi najjasnije sta se nalazi u points
+    #pravimo listu tuplova, uz svaki poluprecnik dodajem x, y koordinatu 
     points = []
-    for r in range(rmin, rmax + 1):
+    for r in range(r_min, r_max + 1):
         for t in range(steps):
             points.append((r, int(r * cos(2 * pi * t / steps)), int(r * sin(2 * pi * t / steps))))
     #---------------------------
 
-    #nije mi ni najjasnije sta se ovde radi popunjava se direktorijum? sa 
-    acc = defaultdict(int)
+    #popunjavamo accumulator, pravimo krug za svaki pixel na krugu, najveci presek krugova je centar
+    accumulator = defaultdict(int)
     for y, x in koordinate:
         for r, dx, dy in points:
             a = x - dx
             b = y - dy
-            acc[(a, b, r)] += 1
+            accumulator[(a, b, r)] += 1
     #---------------------------
 
-    #nije mi ni ovo najjasnije, ovde popunjavamo circles sa bojom, koordinatama centrova i poluprecnikom
+    #pronalazimo iz accumulatora poziciju centra kruga i ubacujemo u circles boju centar i poluprecnik
     circles = []
-    for k, v in sorted(acc.items(), key=lambda i: -i[1]):
+    for k, v in sorted(accumulator.items(), key = lambda i: -i[1]):
         x, y, r = k
         if v / steps >= threshold and all((x - xc) ** 2 + (y - yc) ** 2 > rc ** 2 for _, xc, yc, rc in circles):     
-            #uzimamo rgb vrednosti iz slike da bi upisali boju
-            rgb_im = img.convert('RGB')
+            #uzimamo rgb vrednosti iz slike da bi upisali boju, dodajemo boju u circles
             rgb = rgb_im.getpixel((x + r, y))
             if rgb in boje:
                 circles.append((boje[rgb], x, y, r))
@@ -145,6 +147,8 @@ path = input()
 img = Image.open(path)
 # img = Image.open("/home/covek/Downloads/PSIML/4204/Olympic_rings/public/set/02.png")
 task1(img)
+
+#vece vrednosti za r_min r_max i steps ce znatno usporiti program
 hough_circles(img, 50, 89, 17, 0.4)
 
 #------------------------
