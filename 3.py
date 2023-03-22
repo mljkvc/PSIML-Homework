@@ -4,6 +4,10 @@ from PIL import Image, ImageFilter, ImageDraw
 import PIL.PngImagePlugin as png
 import time
 from collections import defaultdict
+import tracemalloc as t
+
+
+# t.start()
 
 boje = {
     (255, 255, 0): 'Y',
@@ -139,16 +143,22 @@ def hough_circles(img, r_min, r_max, steps, threshold):
 
     #pozivam ispis
     ispis(circles)
-    
+
 
 #main
 
 path = input()
 img = Image.open(path)
-# img = Image.open("/home/covek/Downloads/PSIML/4204/Olympic_rings/public/set/02.png")
 task1(img)
 
 #vece vrednosti za r_min r_max i steps ce znatno usporiti program
-hough_circles(img, 50, 89, 17, 0.4)
 
+hough_circles(img, 45, 95, 17, 0.6)
+
+
+
+
+# print(t.get_traced_memory())
+# t.clear_traces()
+# 500MB  mi zauzima...
 #------------------------

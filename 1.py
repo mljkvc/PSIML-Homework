@@ -6,13 +6,13 @@ def brojac_fajlova(mapa):
         # prebrojavam fajlove (f)  
         
         reci = n.split()
-        fajlovi_lista = [token[3:] for token in reci if token.startswith("(f)")]
+        fajlovi_lista = [token for token in reci if token.startswith("(f)")]
         file_br += len(fajlovi_lista)
     print(file_br)
 
 
 def sort_dir(mapa):
-    for m, n in sorted(mapa.items(), reverse = False):
+    for m, n in sorted(mapa.items()):
         x = sorted(mapa[m].split())
         n = ''
         for i in x:
@@ -23,7 +23,7 @@ def sort_dir(mapa):
 
 def ispis_dir(mapa):
     #ispis dir
-    for m, n in sorted(mapa.items(), reverse = False):
+    for m, n in sorted(mapa.items()):
         print("key:", m, " -----: values:", n)
     print()
 
@@ -31,8 +31,6 @@ def ispis(mapa, putanja, dir_name, uvecanje):
     print('|-' * uvecanje + dir_name)
     for lista in mapa[putanja].split():
         if lista.startswith('(d)'):
-            # print(lista)
-            # uvecanje += 1
             ispis(mapa, putanja + lista[3:] + '/', lista[3:] + '/', uvecanje + 1)
         elif lista.startswith('(f)'):
             print('|-' * (uvecanje + 1) + lista[3:])
@@ -41,19 +39,53 @@ def ispis(mapa, putanja, dir_name, uvecanje):
 
 
 file_lista = []
-def rm(mapa, putanja, dir_name):
+poslednja_putanja = '/'
+def rm(mapa, putanja):
+    global poslednja_putanja
     for lista in mapa[putanja].split():
         if lista.startswith('(d)'):
-            rm(mapa, putanja + lista[3:] + '/', lista[3:] + '/')
+            rm(mapa, putanja + lista[3:] + '/')
         elif lista.startswith('(f)'):
             if lista[3:] not in file_lista:
+                # print('prvi put u', putanja, "nasao sam", lista[3:])
                 file_lista.append(lista[3:])
             else:
-                cd_lista = putanja.split('/')
-                print('$ cd /')
-                for i in cd_lista[1:-1]:
-                    print('$ cd ' + i)
-                print('$ rm ' + lista[3:])
+                # print('putanja mi je', putanja, "nasao sam", lista[3:])
+
+                #prvi put krece od root
+                if poslednja_putanja == '/':
+                    cd_lista = putanja.split('/')
+                    print('$ cd /')
+                    for i in cd_lista[1:-1]:
+                        print('$ cd ' + i)
+                    print('$ rm ' + lista[3:])
+                #else koji ispisuje ako nije prvi put
+                else:
+                    pr_lista = poslednja_putanja.split('/')[1:-1]
+                    tr_lista = putanja.split('/')[1:-1]
+                    # print('trnutna je', tr_lista)
+                    # print('prethod je', pr_lista)
+                    
+                    #ovde idem cd /dir
+                    if len(pr_lista) < len(tr_lista):
+                        pass
+                    else:
+                        #ovde treba cd .. 
+                        # print(len(pr_lista), len(tr_lista))
+                        if (len(pr_lista) - len(tr_lista)) <= len(tr_lista) + 1:
+                            for i in range(len(pr_lista) - len(tr_lista)):
+                                print('$ cd ..')
+                            print('$ rm', lista[3:])
+                        #ovde treba cd /        
+                        else:
+                            print('$ cd /')
+                            for i in tr_lista[1:-1]:
+                                print('$ cd ' + i)
+                            print('$ rm ' + lista[3:])
+                            # -------->
+                # print()    
+
+                poslednja_putanja = putanja
 
 
 
@@ -80,7 +112,7 @@ for line in sys.stdin: #cita do EOF
             mapa[trenutni] = '?'
 
     #ako smo uradili ls, stavljamo ovu liniju da nam bude vrednos u mapi
-    elif komanda.startswith('(d)') or komanda.startswith('(f)'):
+    elif komanda.startswith('('):
         mapa[trenutni] = komanda
         reci = komanda.split()
         
@@ -106,7 +138,7 @@ pom_mapa = sort_dir(mapa)
 # ispis_dir(pom_mapa)
 
 ispis(pom_mapa, '/', '/', 0)
-rm(pom_mapa, '/', '/')
+rm(pom_mapa, '/')
 
 # for m, n in sorted(mapa.items):
 #     print
